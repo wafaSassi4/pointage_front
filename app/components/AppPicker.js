@@ -17,7 +17,7 @@ import AppText from "./AppText/AppText";
 import PickerItem from "./PickerItem";
 import AppButton from "./AppButton";
 
-function AppPicker({ icon, placeholder, items, handleSelect }) {
+function AppPicker({ icon, placeholder, items, onItemSelect }) {
   const [modalVisible, setModalVisible] = useState(false);
   return (
     <>
@@ -50,7 +50,7 @@ function AppPicker({ icon, placeholder, items, handleSelect }) {
             data={items}
             keyExtractor={(item) => item.value.toString()}
             renderItem={({ item }) => (
-              <PickerItem label={item.label} onPress={()=>handleSelect(item)} />
+              <PickerItem label={item.label} onPress={()=>onItemSelect(item)} />
             )}
           />
         </Screen>
