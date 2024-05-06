@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import { createStackNavigator } from "@react-navigation/stack";
-import ForgetPassword from "./ForgetPassword"; // Adjust the path as needed
+import React, { useState, useEffect } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import { useFormikContext } from "formik";
+import ForgetPassword from "../screens/ForgetPassword";
 import { Image, StyleSheet, Text, TouchableOpacity } from "react-native";
 import Screen from "../components/Screen";
 import AppForm from "../components/Forms/AppForm";
@@ -19,18 +20,29 @@ const validationSchema = Yup.object().shape({
 
 function LoginScreen(props) {
   const navigation = useNavigation();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
+  useFocusEffect(
+    React.useCallback(() => {
+      setEmail("");
+      setPassword("");
+      // Ceci garantit que chaque fois que l'écran gagne le focus, les champs sont réinitialisés
+      return () => {};
+    }, [])
+  );
   const handleSubmit = async (values) => {
     try {
-      const res = await axios.post("http://192.168.1.66:3000/user/login", {
+      const res = await axios.post("http://192.168.1.35:3000/user/login", {
         email: values.email,
         password: values.password,
       });
       const userInfo = res.data;
 
       await AsyncStorage.setItem("userId", userInfo._id);
-      await AsyncStorage.setItem("userToken", userInfo.token);
       await AsyncStorage.setItem("fullname", userInfo.fullname);
+      await AsyncStorage.setItem("userToken", userInfo.token);
+      await AsyncStorage.setItem("email", userInfo.email);
 
       console.log("Connected successfully");
       navigation.navigate("FonctionaliterUser");

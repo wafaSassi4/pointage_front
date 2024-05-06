@@ -26,8 +26,8 @@ function FonctionaliterUser(props) {
   const handleDispositionPress = () => {
     navigation.navigate("DispositionUser");
   };
-  const handleSeetings = () => {
-    navigation.navigate("Seetings");
+  const handleSettings = () => {
+    navigation.navigate("Settings");
   };
   return (
     <ScrollView contentContainerStyle={styles.scrollView}>
@@ -87,7 +87,7 @@ function FonctionaliterUser(props) {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.circleContainer}
-            onPress={handleSeetings}
+            onPress={handleSettings}
           >
             <View style={styles.circle4}>
               <Image

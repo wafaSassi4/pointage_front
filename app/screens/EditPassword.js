@@ -25,11 +25,10 @@ function EditPassword() {
 
   const navigation = useNavigation();
 
-
   useEffect(() => {
     const fetchUserId = async () => {
       try {
-        const storedUserId = await AsyncStorage.getItem('userId');
+        const storedUserId = await AsyncStorage.getItem("userId");
         if (storedUserId) {
           setUserId(storedUserId);
         }
@@ -51,9 +50,9 @@ function EditPassword() {
 
     try {
       const response = await axios.put(
-        "http://192.168.1.66:3000/user/edit-password",
+        "http://192.168.1.35:3000/user/edit-password",
         {
-          userId, // Utilisez l'ID utilisateur récupéré
+          userId, 
           currentPassword,
           newPassword,
         }
@@ -108,7 +107,7 @@ function EditPassword() {
             placeholder="Confirmer le nouveau mot de passe"
             secureTextEntry
           />
-          <SubmitButton title="Enregistrer"  />
+          <SubmitButton title="Enregistrer" />
         </AppForm>
       </Screen>
     </ImageBackground>

@@ -17,7 +17,7 @@ function ForgetPassword(props) {
   const navigation = useNavigation();
   const handleSubmit = (values) => {
     axios
-      .post("http://192.168.1.16:3000/user/forget-password", {
+      .post("http://192.168.1.35:3000/user/forget-password", {
         email: values.email,
       })
       .then((response) => {

@@ -1,13 +1,12 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import Seetings from "./app/screens/Seetings";
+import Settings from "./app/screens/Settings";
 import EditNameScreen from "./app/screens/EditNameScreen";
 import EditPassword from "./app/screens/EditPassword";
 import LoginScreen from "./app/screens/LoginScreen";
 import FonctionaliterUser from "./app/screens/FonctionaliterUser";
 import PointageUser from "./app/screens/PointageUser";
-import CongeModifier from "./app/screens/CongeModifier";
 import DispoRemote from "./app/screens/DispoRemote";
 import DispoPresentiel from "./app/screens/DispoPresentiel";
 import DispoConge from "./app/screens/DispoConge";
@@ -22,7 +21,6 @@ import ModifierConge from "./app/screens/ModifierConge";
 import SupprimerConge from "./app/screens/SupprimerConge";
 import Chrono from "./app/screens/Chrono";
 import ForgetPassword from "./app/screens/ForgetPassword";
-import Splash from "./app/screens/Splash";
 import Confirmation from "./app/screens/Confirmation";
 import EditProfilePhoto from "./app/screens/EditPhotoProfil";
 
@@ -62,7 +60,7 @@ const App = () => {
         <Stack.Screen name="DispoConge" component={DispoConge} />
         <Stack.Screen name="DispoPresentiel" component={DispoPresentiel} />
         <Stack.Screen name="DispoRemote" component={DispoRemote} />
-        <Stack.Screen name="Seetings" component={Seetings} />
+        <Stack.Screen name="Settings" component={Settings} />
         <Stack.Screen name="EditName" component={EditNameScreen} />
         <Stack.Screen name="EditPassword" component={EditPassword} />
         <Stack.Screen name="EditPhotoProfil" component={EditProfilePhoto} />

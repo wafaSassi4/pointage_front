@@ -58,11 +58,9 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
   },
   subtitle: {
-    fontSize: 20,
-    color: colors.marron,
+    fontSize: 15,
+    color: colors.black,
     fontWeight: 200,
-    borderWidth: 1, // Temporaire pour le diagnostic
-    borderColor: "red",
   },
 });
 

@@ -1,4 +1,5 @@
 import React from "react";
+import { useState, useEffect } from "react";
 import { StyleSheet, View, FlatList, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import ListItem from "../components/ListItem";
@@ -6,6 +7,8 @@ import ListItemSeparator from "../components/ListItemSeparator";
 import colors from "../config/colors";
 import Icon from "../components/Icon";
 import Screen from "../components/Screen";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const menuItems = [
   {
@@ -34,7 +37,38 @@ const menuItems = [
   },
 ];
 
-function Seetings(props) {
+function Settings(props) {
+  const [fullname, setFullname] = useState("");
+
+  const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    const fetchFullname = async () => {
+      try {
+        const storedFullname = await AsyncStorage.getItem("fullname");
+        if (storedFullname) {
+          setFullname(storedFullname);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchFullname();
+
+    const fetchEmail = async () => {
+      try {
+        const storedEmail = await AsyncStorage.getItem("email");
+        if (storedEmail) {
+          setEmail(storedEmail);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchEmail();
+  }, []);
   const navigation = useNavigation();
 
   const handleMenuItemPress = (screen) => {
@@ -43,12 +77,34 @@ function Seetings(props) {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      const res = await axios.post("http://192.168.1.35:3000/user/logout");
+      if (res.status === 200) {
+        // Supprimez les données d'authentification stockées localement
+        await AsyncStorage.removeItem("userId");
+        await AsyncStorage.removeItem("userToken");
+        await AsyncStorage.removeItem("fullname");
+
+        // Réinitialisez l'état de la navigation pour nettoyer l'historique de la pile
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Login" }],
+        });
+      }
+    } catch (error) {
+      console.error("Erreur lors de la déconnexion", error);
+      // Affichez un message d'erreur si la déconnexion échoue
+      alert("La déconnexion a échoué, veuillez réessayer.");
+    }
+  };
+
   return (
     <Screen style={styles.screen}>
       <View style={styles.container}>
         <ListItem
-          title="Wafa Sassi"
-          subTitle="wafasassi213@gmail.com"
+          title={fullname}
+          subtitle={email}
           image={require("../assets/pdp.jpg")}
         />
       </View>
@@ -76,6 +132,7 @@ function Seetings(props) {
       <ListItem
         title="Déconnexion"
         IconComponent={<Icon name="logout" backgroundColor="#ffe66d" />}
+        onPress={handleLogout}
       />
     </Screen>
   );
@@ -90,4 +147,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Seetings;
+export default Settings;

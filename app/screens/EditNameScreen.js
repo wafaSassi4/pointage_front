@@ -1,20 +1,64 @@
-import React, { useState } from "react";
-import { StyleSheet, ImageBackground } from "react-native";
+import React, { useState, useEffect } from "react";
+import { StyleSheet, ImageBackground, Alert } from "react-native";
 import AppForm from "../components/Forms/AppForm";
 import Screen from "../components/Screen";
 import AppFormField from "../components/Forms/AppFormField";
 import SubmitButton from "../components/Forms/SubmitButton";
 import * as Yup from "yup";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required().label("Nom"),
 });
 
 const EditNameScreen = ({ currentName, onSave }) => {
-  const [newName, setNewName] = useState(currentName);
+  const [userId, setUserId] = useState("");
 
-  const handleSubmit = (values) => {
-    onSave(values.name);
+  const navigation = useNavigation();
+  useEffect(() => {
+    const fetchUserId = async () => {
+      try {
+        const storedUserId = await AsyncStorage.getItem("userId");
+        if (storedUserId) {
+          setUserId(storedUserId);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchUserId();
+  }, []);
+
+  const handleNameChange = async (values) => {
+    const { name } = values;
+
+    if (!userId) {
+      Alert.alert("Erreur", "ID utilisateur non disponible.");
+      return;
+    }
+
+    try {
+      const response = await axios.put(
+        "http://192.168.1.35:3000/user/edit-name",
+        {
+          userId,
+          name,
+        }
+      );
+
+      console.log(response.data);
+      Alert.alert("Succès", "Le nom a été modifié avec succès.");
+      navigation.navigate("FonctionaliterUser");
+    } catch (error) {
+      console.error(error.response ? error.response.data : error);
+      Alert.alert(
+        "Erreur",
+        "Une erreur s'est produite lors de la modification du nom."
+      );
+    }
   };
 
   return (
@@ -26,7 +70,7 @@ const EditNameScreen = ({ currentName, onSave }) => {
       <Screen style={styles.container}>
         <AppForm
           initialValues={{ name: currentName }}
-          onSubmit={handleSubmit}
+          onSubmit={handleNameChange}
           validationSchema={validationSchema}
         >
           <AppFormField
