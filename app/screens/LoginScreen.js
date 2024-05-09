@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { useFormikContext } from "formik";
-import ForgetPassword from "../screens/ForgetPassword";
 import { Image, StyleSheet, Text, TouchableOpacity } from "react-native";
 import Screen from "../components/Screen";
 import AppForm from "../components/Forms/AppForm";
@@ -27,7 +25,6 @@ function LoginScreen(props) {
     React.useCallback(() => {
       setEmail("");
       setPassword("");
-      // Ceci garantit que chaque fois que l'écran gagne le focus, les champs sont réinitialisés
       return () => {};
     }, [])
   );

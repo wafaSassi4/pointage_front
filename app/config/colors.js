@@ -11,4 +11,5 @@ export default {
   gris: "#a9a9a9",
   grisFoncé: "#222222",
   grisCalire: "#656565",
+  milky: "#FDFFF5",
 };

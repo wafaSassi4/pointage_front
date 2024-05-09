@@ -1,129 +1,103 @@
 import React from "react";
-import { Alert, Text, StyleSheet, ImageBackground } from "react-native";
-import AppButton from "../components/AppButton";
+import {
+  Alert,
+  Text,
+  StyleSheet,
+  ImageBackground,
+  ScrollView,
+} from "react-native";
 import colors from "../config/colors";
 import * as Yup from "yup";
 import Screen from "../components/Screen";
+import AppForm from "../components/Forms/AppForm";
+import SubmitButton from "../components/Forms/SubmitButton";
 import AppFormField from "../components/Forms/AppFormField";
-import { Formik } from "formik";
-import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
 
-function SupprimerConge(props) {
-  const navigation = useNavigation();
+const validationSchema = Yup.object().shape({
+  nomPrenom: Yup.string().required().label("Nom et Prénom"),
+  email: Yup.string().required().email().label("Email"),
+  dateDebut: Yup.string().required().label("Date début"),
+  dateFin: Yup.string().required().label("Date fin"),
+});
 
-  const validationSchema = Yup.object().shape({
-    nomPrenom: Yup.string().required().label("nomPrenom"),
-    email: Yup.string().required().email().label("email"),
-    dateDébut: Yup.string().required().label("datedebut"),
-    dateFin: Yup.string().required().label("datefin"),
-  });
-  const handleEnvoyer = (values) => {
-    console.log(values);
-    navigation.navigate("FonctionaliterUser");
-  };
-  const confirmerSuppression = (values) => {
-    Alert.alert(
-      "Confirmer la suppression",
-      "Êtes-vous sûr de vouloir annuler votre congé ?",
-      [
+function SupprimerConge({ navigation }) {
+  const handleSubmit = async (values) => {
+    try {
+      // Correction ici : Assurez-vous que la structure de données envoyée correspond à celle attendue par votre API.
+      const response = await axios.delete(
+        "http://192.168.1.35:3000/conge/supprimer-conge",
         {
-          text: "Annuler",
-          onPress: () => console.log("Annulation demandée"),
-          style: "cancel",
-        },
-        { text: "Oui", onPress: () => handleEnvoyer(values) },
-      ]
-    );
+          data: values,
+        }
+      );
+
+      console.log(response.data);
+      Alert.alert("Succès", "Congé supprimé avec succès!");
+      navigation.goBack();
+    } catch (error) {
+      console.error("Erreur lors de la suppression du congé:", error);
+      // Amélioration ici : Affichage d'un message d'erreur plus informatif pour l'utilisateur.
+      let errorMessage = "Erreur lors de la suppression du congé.";
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        errorMessage = error.response.data.message;
+      }
+      Alert.alert("Erreur", errorMessage);
+    }
   };
+
   return (
     <ImageBackground
-      blurRadius={50}
+      blurRadius={10}
       style={styles.background}
       source={require("../assets/welcomebackground.jpg")}
     >
-      <Screen style={styles.container}>
-        <Formik
-          initialValues={{
-            nomPrenom: "",
-            email: "",
-            dateDébut: "",
-            dateFin: "",
-          }}
-          onSubmit={handleEnvoyer}
-          validationSchema={validationSchema}
-        >
-          {({ handleChange, handleSubmit, errors, touched }) => (
-            <>
-              <Text style={styles.title}>Supprimer Le Congé !</Text>
-
-              <AppFormField
-                autoCapitalize="none"
-                autoCorrect={false}
-                icon="user"
-                keyboardType="Account"
-                name="nomPrenom"
-                placeholder="Nom et Prénom"
-                textContentType="Account"
-                onChangeText={handleChange("nomPrenom")}
-                onBlur={() => setFieldTouched("nomPrenom")}
-                error={errors.nomPrenom}
-                touched={touched.nomPrenom}
-              />
-
-              <AppFormField
-                autoCapitalize="none"
-                autoCorrect={false}
-                icon="email"
-                keyboardType="email-address"
-                name="email"
-                placeholder="Email"
-                textContentType="emailAddress"
-                onChangeText={handleChange("email")}
-                onBlur={() => setFieldTouched("email")}
-                error={errors.email}
-                touched={touched.email}
-              />
-
-              <AppFormField
-                autoCapitalize="none"
-                autoCorrect={false}
-                icon="calendar"
-                keyboardType="date"
-                name="datedebut"
-                placeholder="Donner la date de début"
-                textContentType="emailAddress"
-                onChangeText={handleChange("datedebut")}
-                onBlur={() => setFieldTouched("datedebut")}
-                error={errors.dateDebut}
-                touched={touched.dateDebut}
-              />
-
-              <AppFormField
-                autoCapitalize="none"
-                autoCorrect={false}
-                icon="calendar"
-                keyboardType="date"
-                name="datefin"
-                placeholder="Donner la date de fin"
-                textContentType="date"
-                onChangeText={handleChange("datefin")}
-                onBlur={() => setFieldTouched("datefin")}
-                error={errors.dateFin}
-                touched={touched.dateFin}
-              />
-
-              <AppButton
-                style={styles.Button}
-                title="Supprimer Congé"
-                onPress={() => confirmerSuppression(handleSubmit)}
-              />
-            </>
-          )}
-        </Formik>
-      </Screen>
+      <ScrollView contentContainerStyle={styles.scrollView}>
+        <Screen style={styles.container}>
+          <Text style={styles.title}>Supprimer Congé</Text>
+          <AppForm
+            initialValues={{
+              nomPrenom: "",
+              email: "",
+              dateDebut: "",
+              dateFin: "",
+            }}
+            onSubmit={handleSubmit}
+            validationSchema={validationSchema}
+          >
+            <AppFormField
+              name="nomPrenom"
+              placeholder="Nom et Prénom"
+              icon="account"
+            />
+            <AppFormField
+              name="email"
+              placeholder="Email"
+              icon="email"
+              keyboardType="email-address"
+            />
+            <AppFormField
+              name="dateDebut"
+              placeholder="Date de début (JJ/MM/AAAA)"
+              icon="calendar-range"
+            />
+            <AppFormField
+              name="dateFin"
+              placeholder="Date de fin (JJ/MM/AAAA)"
+              icon="calendar-range"
+            />
+            <SubmitButton title="Supprimer" />
+          </AppForm>
+        </Screen>
+      </ScrollView>
     </ImageBackground>
   );
 }
+
 const styles = StyleSheet.create({
   background: {
     flex: 1,
@@ -140,16 +114,6 @@ const styles = StyleSheet.create({
     color: colors.marron,
     fontStyle: "italic",
     marginTop: 50,
-  },
-  input: {
-    borderColor: "#ddd",
-    padding: 5,
-    marginBottom: 5,
-  },
-  Button: {
-    backgroundColor: colors.beige,
-    marginBottom: 30,
-    justifyContent: "center",
   },
 });
 

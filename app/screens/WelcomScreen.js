@@ -5,10 +5,10 @@ import colors from "../config/colors";
 import AppButton from "../components/AppButton";
 
 function WelcomeScreen(props) {
-  const navigation = useNavigation(); // Obtenez l'objet de navigation
+  const navigation = useNavigation(); 
 
   const handleUserPress = () => {
-    navigation.navigate("Login"); // Naviguez vers l'écran LoginScreen lorsque le bouton "User" est pressé
+    navigation.navigate("Login"); 
   };
 
   return (

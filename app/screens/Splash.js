@@ -1,26 +1,52 @@
 import React, { useEffect, useRef } from "react";
-import { View, Image, Text, StyleSheet } from "react-native";
+import { StyleSheet, View, Text, Image, Animated } from "react-native";
+import colors from "../config/colors";
 import { useNavigation } from "@react-navigation/native";
 
 const Splash = () => {
   const navigation = useNavigation();
-  const timerRef = useRef(null);
+  const fadeAnim = useRef(new Animated.Value(0)).current; // Pour l'opacité
+  const imageSize = useRef(new Animated.Value(100)).current; // Commence à 150
+  const textTranslate = useRef(new Animated.Value(100)).current; // Commence à 100 pixels du bas
 
   useEffect(() => {
-    timerRef.current = setTimeout(() => {
-      navigation.replace("WelcomScreen");
-    }, 3000);
-
-    return () => clearTimeout(timerRef.current);
-  }, [navigation]);
+    Animated.parallel([
+      Animated.timing(imageSize, {
+        toValue: 200,
+        duration: 9000,
+        useNativeDriver: false,
+      }),
+      Animated.timing(textTranslate, {
+        toValue: 2,
+        duration: 9000,
+        useNativeDriver: true,
+      }),
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 9000,
+        useNativeDriver: true,
+      }),
+    ]).start(() => navigation.navigate("welcome"));
+  }, [fadeAnim, imageSize, textTranslate, navigation]);
 
   return (
     <View style={styles.container}>
-      <Image
-        style={styles.logo}
-        source={require("../assets/welcomebackground.jpg")}
-      />
-      <Text style={styles.title}>Bienvenue dans mon application</Text>
+      <Animated.View style={[styles.animationView, { opacity: fadeAnim }]}>
+        <Animated.Image
+          style={[styles.image, { width: imageSize, height: imageSize }]}
+          source={require("../assets/logoF.png")}
+        />
+        <Animated.Text
+          style={[
+            styles.text,
+            {
+              transform: [{ translateY: textTranslate }],
+            },
+          ]}
+        >
+          Pointo System
+        </Animated.Text>
+      </Animated.View>
     </View>
   );
 };
@@ -30,18 +56,19 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: colors.milky,
   },
-  logo: {
-    width: 200,
-    height: 200,
-    resizeMode: "contain",
+  animationView: {
+    alignItems: "center",
   },
-  title: {
+  image: {
+    marginBottom: 20,
+  },
+  text: {
     fontSize: 20,
     fontWeight: "bold",
-    marginTop: 20,
-    color: "#333",
+    color: colors.caramel,
+    marginTop: 10,
   },
 });
 

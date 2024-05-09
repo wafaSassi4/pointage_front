@@ -10,9 +10,6 @@ import PointageUser from "./app/screens/PointageUser";
 import DispoRemote from "./app/screens/DispoRemote";
 import DispoPresentiel from "./app/screens/DispoPresentiel";
 import DispoConge from "./app/screens/DispoConge";
-import CongeEnvoyer from "./app/screens/CongeEnvoyer";
-import DemandeRemote from "./app/screens/DemandeRemote";
-import DemandeEnvoyer from "./app/screens/DemandeEnvoyer";
 import Consulterdisposition from "./app/screens/Consulterdisposition";
 import WelcomeScreen from "./app/screens/WelcomScreen";
 import DemandeConge from "./app/screens/DemandeConge";
@@ -23,6 +20,8 @@ import Chrono from "./app/screens/Chrono";
 import ForgetPassword from "./app/screens/ForgetPassword";
 import Confirmation from "./app/screens/Confirmation";
 import EditProfilePhoto from "./app/screens/EditPhotoProfil";
+import Splash from "./app/screens/Splash";
+import DemandeRemote from "./app/screens/DemandeRemote";
 
 const Stack = createStackNavigator();
 
@@ -30,6 +29,11 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
+        <Stack.Screen
+          name="splash"
+          component={Splash}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="welcome"
           component={WelcomeScreen}
@@ -53,10 +57,8 @@ const App = () => {
         <Stack.Screen name="SupprimerConge" component={SupprimerConge} />
         <Stack.Screen name="PointageUser" component={PointageUser} />
         <Stack.Screen name="Chrono" component={Chrono} />
-        <Stack.Screen name="CongeEnvoyer" component={CongeEnvoyer} />
         <Stack.Screen name="DemandeRemote" component={DemandeRemote} />
         <Stack.Screen name="DispositionUser" component={Consulterdisposition} />
-        <Stack.Screen name="DemandeEnvoyer" component={DemandeEnvoyer} />
         <Stack.Screen name="DispoConge" component={DispoConge} />
         <Stack.Screen name="DispoPresentiel" component={DispoPresentiel} />
         <Stack.Screen name="DispoRemote" component={DispoRemote} />
