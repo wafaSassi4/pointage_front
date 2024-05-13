@@ -16,9 +16,9 @@ function Consulterdisposition(props) {
     if (item.value === 3) {
       navigation.navigate("DispoConge");
     } else if (item.value === 2) {
-      navigation.navigate("DispoRemote");
+      navigation.navigate("RemoteEmployees");
     } else if (item.value === 1) {
-      navigation.navigate("DispoPresentiel");
+      navigation.navigate("PresentielEmployees");
     }
   };
 

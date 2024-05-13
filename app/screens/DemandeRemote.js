@@ -1,34 +1,34 @@
 import AppText from "../components/AppText";
 import React from "react";
-import { Text, StyleSheet, ImageBackground, Alert } from "react-native";
+import {
+  Text,
+  StyleSheet,
+  ImageBackground,
+  Alert,
+  ScrollView,
+} from "react-native";
 import AppButton from "../components/AppButton";
 import colors from "../config/colors";
 import * as Yup from "yup";
 import Screen from "../components/Screen";
-import AppTextInput from "../components/AppTextInput";
-import { Formik } from "formik";
-import { useNavigation } from "@react-navigation/native";
+import AppForm from "../components/Forms/AppForm";
+import AppFormField from "../components/Forms/AppFormField";
 import axios from "axios";
 import moment from "moment";
 
-function validateDates(date) {
-  return moment(date, "DD/MM/YYYY", true).isValid();
-}
-
 const validationSchema = Yup.object().shape({
-  nomPrenom: Yup.string().required().label("nomPrenom"),
+  nomPrenom: Yup.string().required().label("nom et Prenom"),
   email: Yup.string().required().email().label("email"),
-  date: Yup.string().required().label("date"),
+  dateDebut: Yup.string().required().label("Date de début"),
+  dateFin: Yup.string().required().label("Date de fin"),
 });
-function DemandeRemote(props) {
-  const navigation = useNavigation();
-
-  const handleEnvoyer = async (values) => {
-    const { nomPrenom, email, date } = values;
+function DemandeRemote({ navigation }) {
+  const handleSubmit = async (values) => {
+    const { nomPrenom, email, date, dateFin } = values;
     try {
       const response = await axios.post(
         "http://192.168.1.35:3000/remote/submit",
-        { nomPrenom, email, date }
+        { nomPrenom, email, dateDebut, dateFin }
       );
       console.log(response.data);
       navigation.goBack();
@@ -48,62 +48,58 @@ function DemandeRemote(props) {
       style={styles.background}
       source={require("../assets/welcomebackground.jpg")}
     >
-      <Screen style={styles.container}>
-        <Formik
-          initialValues={{ nomPrenom: "", email: "", date: "" }}
-          onSubmit={handleEnvoyer}
-          validationSchema={validationSchema}
-        >
-          {({ handleChange, handleSubmit, errors, touched }) => (
-            <>
-              <Text style={styles.title}>Demande de travail en remote</Text>
+      <ScrollView contentContainerStyle={styles.scrollView}>
+        <Screen style={styles.container}>
+          <Text style={styles.title}>Demande de travail en ligne</Text>
+          <AppForm
+            initialValues={{
+              nomPrenom: "",
+              email: "",
+              dateDebut: "",
+              dateFin: "",
+            }}
+            onSubmit={handleSubmit}
+            validationSchema={validationSchema}
+          >
+            <AppFormField
+              autoCapitalize="none"
+              autoCorrect={false}
+              icon="lock"
+              name="nomPrenom"
+              placeholder="Nom et Prénom"
+            />
+            <AppFormField
+              autoCapitalize="none"
+              autoCorrect={false}
+              icon="email"
+              keyboardType="email-address"
+              name="email"
+              placeholder="Email"
+              textContentType="emailAddress"
+            />
+            <AppFormField
+              autoCapitalize="none"
+              autoCorrect={false}
+              icon="calendar"
+              name="dateDebut"
+              placeholder="JJ/MM/AAAA"
+            />
+            <AppFormField
+              autoCapitalize="none"
+              autoCorrect={false}
+              icon="calendar"
+              name="dateFin"
+              placeholder="JJ/MM/AAAA"
+            />
 
-              <AppTextInput
-                autoCapitalize="none"
-                autoCorrect={false}
-                icon="user"
-                placeholder="Nom et Prénom"
-                onChangeText={handleChange("nomPrenom")}
-                style={styles.input}
-              />
-              <AppText style={{ color: "red" }}>{errors.nomPrenom}</AppText>
-
-              <AppTextInput
-                autoCapitalize="none"
-                autoCorrect={false}
-                placeholder="Email"
-                icon="email"
-                keyboardType="email-address"
-                onChangeText={handleChange("email")}
-                style={styles.input}
-              />
-              <AppText style={{ color: "red" }}>{errors.email}</AppText>
-
-              <AppTextInput
-                autoCapitalize="none"
-                autoCorrect={false}
-                icon="calendar"
-                placeholder="JJ/MM/AAAA"
-                keyboardType="numeric"
-                onChangeText={(text) => {
-                  if (text.length === 2 || text.length === 5) {
-                    text += "-";
-                  }
-                  handleChange("date")(text);
-                }}
-                style={styles.input}
-              />
-              <AppText style={{ color: "red" }}>{errors.date}</AppText>
-
-              <AppButton
-                style={styles.Button}
-                title="Envoyer"
-                onPress={handleSubmit}
-              />
-            </>
-          )}
-        </Formik>
-      </Screen>
+            <AppButton
+              style={styles.Button}
+              title="Envoyer"
+              onPress={handleSubmit}
+            />
+          </AppForm>
+        </Screen>
+      </ScrollView>
     </ImageBackground>
   );
 }
@@ -114,20 +110,24 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     padding: 20,
   },
+  scrollView: {
+    flexGrow: 1,
+    justifyContent: "center",
+  },
   container: {
     padding: 10,
   },
   title: {
     fontSize: 20,
-    marginBottom: 10,
+    marginBottom: 20,
     fontWeight: "bold",
     color: colors.marron,
     fontStyle: "italic",
-    marginTop: 50,
+    marginTop: 30,
+    textAlign: "center",
   },
   input: {
     borderColor: "#ddd",
-    borderWidth: 1,
     padding: 5,
     marginBottom: 5,
     fontSize: 20,

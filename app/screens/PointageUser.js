@@ -1,39 +1,68 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   View,
-  ImageBackground,
   Text,
   TouchableOpacity,
-  Platform,
-  StatusBar,
+  ImageBackground,
+  Alert,
 } from "react-native";
-import AppButton from "../components/AppButton";
 import { FontAwesome } from "@expo/vector-icons";
-import colors from "../config/colors";
 import { useNavigation } from "@react-navigation/native";
-import { Picker } from "@react-native-picker/picker";
+import colors from "../config/colors";
+import AppButton from "../components/AppButton";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function PointageUser(props) {
   const navigation = useNavigation();
-  const [workType, setWorkType] = useState("");
+  const [workMode, setWorkMode] = useState("");
 
-  const handleCommencer = () => {
-    if (!workType) {
-      alert("Veuillez choisir un mode de travail avant de commencer.");
-      return;
-    }
-
-    navigation.navigate("Chrono");
-  };
-
-  const handleWorkType = (type) => {
-    setWorkType(type);
-    alert(
-      `Vous avez choisi le travail ${
-        type === "remote" ? "en remote" : "présentiel"
+  const handleWorkMode = (mode) => {
+    setWorkMode(mode);
+    Alert.alert(
+      "Mode de travail sélectionné",
+      `Vous avez choisi de travailler ${
+        mode === "remote" ? "à distance" : "en présentiel"
       }.`
     );
+  };
+
+  const handleCommencer = async () => {
+    try {
+      if (!workMode) {
+        Alert.alert("Sélectionnez un type de travail");
+        return;
+      }
+
+      const fullname = await AsyncStorage.getItem("fullname");
+      const token = await AsyncStorage.getItem("userToken");
+
+      const entryData = {
+        entryTime: `${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`,
+        workMode: workMode,
+        fullname: fullname,
+      };
+
+      const response = await axios.post(
+        "http://192.168.1.35:3000/employees/createEntry",
+        entryData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response) {
+        const Entry = response.data.data;
+        await AsyncStorage.setItem("entryId", Entry._id);
+        navigation.navigate("Chrono");
+      }
+    } catch (error) {
+      console.error("Erreur lors de la sauvegarde des données :", error);
+      Alert.alert("Erreur lors de la sauvegarde des données");
+    }
   };
 
   return (
@@ -43,16 +72,16 @@ function PointageUser(props) {
       source={require("../assets/welcomebackground.jpg")}
     >
       <View style={styles.container}>
-        <Text style={styles.Text}>choisissez le mode de travaille :</Text>
+        <Text style={styles.text}>choisissez le mode de travaille :</Text>
         <View style={styles.row}>
           <TouchableOpacity
             style={[
               styles.checkbox,
-              workType === "presentiel" && styles.selectedCheckbox,
+              workMode === "presentiel" && styles.selectedCheckbox,
             ]}
-            onPress={() => handleWorkType("presentiel")}
+            onPress={() => handleWorkMode("presentiel")}
           >
-            {workType === "presentiel" && (
+            {workMode === "presentiel" && (
               <FontAwesome name="check" size={20} color="#fff" />
             )}
           </TouchableOpacity>
@@ -62,11 +91,11 @@ function PointageUser(props) {
           <TouchableOpacity
             style={[
               styles.checkbox,
-              workType === "remote" && styles.selectedCheckbox,
+              workMode === "remote" && styles.selectedCheckbox,
             ]}
-            onPress={() => handleWorkType("remote")}
+            onPress={() => handleWorkMode("remote")}
           >
-            {workType === "remote" && (
+            {workMode === "remote" && (
               <FontAwesome name="check" size={20} color="#fff" />
             )}
           </TouchableOpacity>
@@ -100,7 +129,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  Text: {
+  text: {
     fontSize: 20,
     marginBottom: 21,
     fontWeight: "bold",
@@ -124,6 +153,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
     marginLeft: 10,
+    color: colors.white,
   },
   button: {
     justifyContent: "flex-end",

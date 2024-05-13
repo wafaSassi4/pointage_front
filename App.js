@@ -7,8 +7,6 @@ import EditPassword from "./app/screens/EditPassword";
 import LoginScreen from "./app/screens/LoginScreen";
 import FonctionaliterUser from "./app/screens/FonctionaliterUser";
 import PointageUser from "./app/screens/PointageUser";
-import DispoRemote from "./app/screens/DispoRemote";
-import DispoPresentiel from "./app/screens/DispoPresentiel";
 import DispoConge from "./app/screens/DispoConge";
 import Consulterdisposition from "./app/screens/Consulterdisposition";
 import WelcomeScreen from "./app/screens/WelcomScreen";
@@ -22,6 +20,8 @@ import Confirmation from "./app/screens/Confirmation";
 import EditProfilePhoto from "./app/screens/EditPhotoProfil";
 import Splash from "./app/screens/Splash";
 import DemandeRemote from "./app/screens/DemandeRemote";
+import RemoteEmployees from "./app/screens/RemoteEmployees";
+import PresentielEmployees from "./app/screens/PresentielEmployees";
 
 const Stack = createStackNavigator();
 
@@ -59,9 +59,12 @@ const App = () => {
         <Stack.Screen name="Chrono" component={Chrono} />
         <Stack.Screen name="DemandeRemote" component={DemandeRemote} />
         <Stack.Screen name="DispositionUser" component={Consulterdisposition} />
+        <Stack.Screen
+          name="PresentielEmployees"
+          component={PresentielEmployees}
+        />
+        <Stack.Screen name="RemoteEmployees" component={RemoteEmployees} />
         <Stack.Screen name="DispoConge" component={DispoConge} />
-        <Stack.Screen name="DispoPresentiel" component={DispoPresentiel} />
-        <Stack.Screen name="DispoRemote" component={DispoRemote} />
         <Stack.Screen name="Settings" component={Settings} />
         <Stack.Screen name="EditName" component={EditNameScreen} />
         <Stack.Screen name="EditPassword" component={EditPassword} />
