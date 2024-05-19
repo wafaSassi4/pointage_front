@@ -1,29 +1,29 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, ImageBackground } from "react-native";
-import colors from "../config/colors";
 import axios from "axios";
+import colors from "../config/colors";
 
-function RemoteEmployees() {
-  const [remoteEmployees, setRemoteEmployees] = useState([]);
+function PresentielEmployees() {
+  const [presentEmployees, setPresentEmployees] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchRemoteEmployees = async () => {
+    const fetchPresentEmployees = async () => {
       try {
         const response = await axios.get(
-          "http://192.168.1.35:3000/employees/remote"
+          "http://192.168.1.35:3000/employees/presentiel"
         );
         if (response.data && response.data.length > 0) {
-          setRemoteEmployees(response.data);
+          setPresentEmployees(response.data);
         } else {
-          setRemoteEmployees([]);
+          setPresentEmployees([]);
         }
       } catch (error) {
         console.error("Erreur lors de la récupération des employés :", error);
         setError(error.message);
       }
     };
-    fetchRemoteEmployees();
+    fetchPresentEmployees();
   }, []);
 
   if (error) {
@@ -43,17 +43,16 @@ function RemoteEmployees() {
     >
       <View style={styles.container}>
         <Text style={styles.title}>
-          Liste des employés travaillant en remote aujourd'hui :
+          Liste des employés travaillant en présentiel aujourd'hui :
         </Text>
-        {remoteEmployees.length === 0 ? (
+        {presentEmployees.length === 0 ? (
           <Text style={styles.noEmployeeText}>
-            Aucun employé travail à distance aujourd'hui.
+            Aucun employé présent aujourd'hui.
           </Text>
         ) : (
-          remoteEmployees.map((employee, index) => (
+          presentEmployees.map((employee, index) => (
             <View style={styles.employeeItem} key={index}>
               <Text style={styles.fullname}>{employee.fullname}</Text>
-              <Text style={styles.fullname}>{employee.email}</Text>
             </View>
           ))
         )}
@@ -67,7 +66,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
-    padding: 20,
   },
   container: {
     flex: 1,
@@ -85,8 +83,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   fullname: {
-    fontSize: 18,
-    fontStyle: "normal",
+    fontSize: 20,
+    fontStyle: "italic",
   },
   errorText: {
     fontSize: 16,
@@ -98,4 +96,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RemoteEmployees;
+export default PresentielEmployees;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -13,6 +13,25 @@ import colors from "../config/colors";
 import AppButton from "../components/AppButton";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const verifyExistingEntry = async (fullname) => {
+  try {
+    const response = await axios.post(
+      "http://192.168.1.35:3000/employees/getActiveEmployee",
+      {
+        fullname,
+      }
+    );
+    if (response.data.message === "Employee exist") {
+      await AsyncStorage.removeItem("workedTime");
+      await AsyncStorage.setItem("workedTime", response.data.entry[0].hoursWorked)
+      return true;
+    }
+  } catch (error) {
+    console.error("Error verifying existing entry:", error);
+    return false;
+  }
+};
 
 function PointageUser(props) {
   const navigation = useNavigation();
@@ -37,6 +56,7 @@ function PointageUser(props) {
 
       const fullname = await AsyncStorage.getItem("fullname");
       const token = await AsyncStorage.getItem("userToken");
+      await AsyncStorage.setItem("workMode", workMode);
 
       const entryData = {
         entryTime: `${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`,
@@ -44,21 +64,23 @@ function PointageUser(props) {
         fullname: fullname,
       };
 
-      const response = await axios.post(
-        "http://192.168.1.35:3000/employees/createEntry",
-        entryData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      if (!(await verifyExistingEntry(fullname))) {
+        const response = await axios.post(
+          "http://192.168.1.35:3000/employees/createEntry",
+          entryData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (response) {
+          const Entry = response.data.data;
+          await AsyncStorage.setItem("entryId", Entry._id);
         }
-      );
-
-      if (response) {
-        const Entry = response.data.data;
-        await AsyncStorage.setItem("entryId", Entry._id);
-        navigation.navigate("Chrono");
       }
+
+      navigation.navigate("Chrono");
     } catch (error) {
       console.error("Erreur lors de la sauvegarde des données :", error);
       Alert.alert("Erreur lors de la sauvegarde des données");
@@ -141,8 +163,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: colors.caramel,
-    padding: 5,
     borderRadius: 5,
+    width: 25,
+    height: 25,
     marginBottom: 10,
   },
   selectedCheckbox: {

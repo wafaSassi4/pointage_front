@@ -5,13 +5,14 @@ import {
   Text,
   TouchableOpacity,
   ImageBackground,
+  Modal,
+  Animated,
 } from "react-native";
-import axios from "axios"; // Import d'Axios
+import axios from "axios"; 
 import colors from "../config/colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function Chrono(props) {
-  // État du chronomètre
   const [timer, setTimer] = useState(0);
   const [isActive, setIsActive] = useState(true);
   const [isPause, setIsPause] = useState(false);
@@ -30,6 +31,48 @@ function Chrono(props) {
       "0"
     )}:${String(seconds).padStart(2, "0")}`;
   };
+
+  const [showContent, setShowContent] = useState(false);
+  const scaleValue = new Animated.Value(0);
+
+  useEffect(() => {
+
+    const displaySequentialNotifications = async () => {
+      const workMode = await AsyncStorage.getItem("workMode");
+      if (workMode === "remote") {
+        const numberOfNotifications = 5;
+        for (let i = 0; i < numberOfNotifications; i++) {
+          
+          const randomTime = Math.floor(Math.random() * 6000) + 3000;
+          await new Promise(resolve => setTimeout(resolve, randomTime));
+          setShowContent(true);
+        }
+      }
+    }
+    displaySequentialNotifications();
+  }, []);
+
+  const handleClose = () => {
+    Animated.timing(scaleValue, {
+      toValue: 0,
+      duration: 200,
+      useNativeDriver: true,
+    }).start(() => setShowContent(false));
+  };
+
+  const animate = () => {
+    Animated.timing(scaleValue, {
+      toValue: 1,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const contentScale = scaleValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.9, 1],
+  });
+
   useEffect(() => {
     let interval = null;
     if (isActive && !isPause) {
@@ -77,6 +120,7 @@ function Chrono(props) {
         }
       );
       console.log("Données envoyées avec succès :", response.data);
+      setTimer(0);
     } catch (error) {
       console.error(
         "Une erreur s'est produite lors de l'envoi des données :",
@@ -88,7 +132,6 @@ function Chrono(props) {
   const handleFinish = () => {
     setIsPause(true); // Mettre en pause le chrono
     setIsActive(false); // Arrêter le chrono
-
     setElapsedTime(timer);
 
     // Mettre à jour le temps de sortie avec l'heure actuelle
@@ -112,6 +155,7 @@ function Chrono(props) {
     // Envoyer les données au serveur
     sendDataToServer();
   };
+  
 
   // Rendu du composant
   return (
@@ -158,7 +202,28 @@ function Chrono(props) {
             Temps écoulé : {formatTime(elapsedTime)}
           </Text>
         )}
+
       </View>
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={showContent}
+        onRequestClose={handleClose}
+      >
+        <View style={styles.modalContainer}>
+          <Animated.View
+            style={[
+              styles.modalContent,
+              { transform: [{ scale: contentScale }] },
+            ]}
+          >
+            <Text>This content appeared after a random time!</Text>
+            <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </View>
+      </Modal>
     </ImageBackground>
   );
 }
@@ -220,6 +285,34 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: colors.marron,
     fontStyle: "normal",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    elevation: 5,
+    fontSize: 30,
+  },
+  closeButton: {
+    marginTop: 10,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  closeButtonText: {
+    color: "white",
+    backgroundColor: "blue",
+    textAlign: "center",
+    padding: 5,
+    borderRadius: 7,
+    width: 65,
   },
 });
 
