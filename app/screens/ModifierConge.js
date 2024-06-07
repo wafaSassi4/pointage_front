@@ -1,5 +1,5 @@
 import React from "react";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Text,
   StyleSheet,
@@ -15,6 +15,7 @@ import AppFormField from "../components/Forms/AppFormField";
 import SubmitButton from "../components/Forms/SubmitButton";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useTranslation } from "react-i18next";
 
 const validationSchema = Yup.object().shape({
   nomPrenom: Yup.string().required().label("nom et Prenom"),
@@ -24,6 +25,7 @@ const validationSchema = Yup.object().shape({
 });
 
 function ModifierConge({ navigation }) {
+  const { t } = useTranslation();
   const [userId, setUserId] = useState("");
   useEffect(() => {
     const fetchUserId = async () => {
@@ -46,12 +48,12 @@ function ModifierConge({ navigation }) {
     }
     try {
       const response = await axios.put(
-        "http://192.168.1.35:3000/conge/modifier-conge",
+        "https://gcrbjwsr-3000.euw.devtunnels.ms/conge/modifier-conge",
         { nomPrenom, email, NVdateDebut, NVdateFin }
       );
       console.log(response.data);
       navigation.goBack();
-      Alert.alert("Modification de congé envoyée avec succès!");
+      Alert.alert(t("Modification de congé envoyée avec succès!"));
     } catch (error) {
       console.error("Erreur lors de l'envoi de la demande de congé:", error);
       Alert.alert(error.response.data.message);
@@ -61,11 +63,11 @@ function ModifierConge({ navigation }) {
     <ImageBackground
       blurRadius={50}
       style={styles.background}
-      source={require("../assets/welcomebackground.jpg")}
+      source={require("../assets/a2.png")}
     >
       <ScrollView contentContainerStyle={styles.scrollView}>
         <Screen style={styles.container}>
-          <Text style={styles.title}>Modifier Congé</Text>
+          <Text style={styles.title}>{t("Modify Leave")}!</Text>
           <AppForm
             initialValues={{
               nomPrenom: "",
@@ -81,7 +83,7 @@ function ModifierConge({ navigation }) {
               autoCorrect={false}
               icon="lock"
               name="nomPrenom"
-              placeholder="Nom et Prénom"
+              placeholder={t("Name and Surname")}
             />
             <AppFormField
               autoCapitalize="none"
@@ -89,7 +91,7 @@ function ModifierConge({ navigation }) {
               icon="email"
               keyboardType="email-address"
               name="email"
-              placeholder="Email"
+              placeholder={t("Email")}
               textContentType="emailAddress"
             />
             <AppFormField
@@ -97,17 +99,17 @@ function ModifierConge({ navigation }) {
               autoCorrect={false}
               icon="calendar"
               name="NVdateDebut"
-              placeholder="JJ/MM/AAAA"
+              placeholder={t("Enter new start date")}
             />
             <AppFormField
               autoCapitalize="none"
               autoCorrect={false}
               icon="calendar"
               name="NVdateFin"
-              placeholder="JJ/MM/AAAA"
+              placeholder={t("Enter new end date of leave")}
             />
 
-            <SubmitButton title="Modifier" />
+            <SubmitButton title={t("Modify Leave")} />
           </AppForm>
         </Screen>
       </ScrollView>

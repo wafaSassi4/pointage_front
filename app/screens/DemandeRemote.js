@@ -11,10 +11,10 @@ import AppButton from "../components/AppButton";
 import colors from "../config/colors";
 import * as Yup from "yup";
 import Screen from "../components/Screen";
-import AppForm from "../components/Forms/AppForm";
 import AppFormField from "../components/Forms/AppFormField";
+import AppForm from "../components/Forms/AppForm";
+import SubmitButton from "../components/Forms/SubmitButton";
 import axios from "axios";
-import moment from "moment";
 
 const validationSchema = Yup.object().shape({
   nomPrenom: Yup.string().required().label("nom et Prenom"),
@@ -24,21 +24,18 @@ const validationSchema = Yup.object().shape({
 });
 function DemandeRemote({ navigation }) {
   const handleSubmit = async (values) => {
-    const { nomPrenom, email, date, dateFin } = values;
+    const { nomPrenom, email, dateDebut, dateFin } = values;
     try {
       const response = await axios.post(
-        "http://192.168.1.35:3000/remote/submit",
+        "https://gcrbjwsr-3000.euw.devtunnels.ms/remote/submit",
         { nomPrenom, email, dateDebut, dateFin }
       );
       console.log(response.data);
       navigation.goBack();
-      Alert.alert("Demande de congé envoyée avec succès!");
+      Alert.alert("Demande de télétravail envoyée avec succès!");
     } catch (error) {
       console.error("Erreur lors de l'envoi de la demande ", error);
-      Alert.alert(
-        "Erreur",
-        "Une erreur s'est produite. Veuillez réessayer plus tard."
-      );
+      Alert.alert(error.response.data.message);
     }
   };
 
@@ -46,7 +43,7 @@ function DemandeRemote({ navigation }) {
     <ImageBackground
       blurRadius={50}
       style={styles.background}
-      source={require("../assets/welcomebackground.jpg")}
+      source={require("../assets/a2.png")}
     >
       <ScrollView contentContainerStyle={styles.scrollView}>
         <Screen style={styles.container}>
@@ -92,11 +89,7 @@ function DemandeRemote({ navigation }) {
               placeholder="JJ/MM/AAAA"
             />
 
-            <AppButton
-              style={styles.Button}
-              title="Envoyer"
-              onPress={handleSubmit}
-            />
+            <SubmitButton title="Envoyer" />
           </AppForm>
         </Screen>
       </ScrollView>

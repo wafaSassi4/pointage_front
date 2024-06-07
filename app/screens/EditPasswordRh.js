@@ -3,12 +3,15 @@ import { StyleSheet, Alert, ImageBackground } from "react-native";
 import * as Yup from "yup";
 import Screen from "../components/Screen";
 import AppForm from "../components/Forms/AppForm";
-import AppFormField from "../components/Forms/AppFormField";
 import SubmitButton from "../components/Forms/SubmitButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
+import AppPass from "../components/AppPass";
+import AppText from "../components/AppText";
+import { Formik } from "formik";
+import AppFormField from "../components/Forms/AppFormField";
 
 const validationSchema = Yup.object().shape({
   currentPassword: Yup.string().required().label("Mot de passe actuel"),
@@ -21,16 +24,15 @@ const validationSchema = Yup.object().shape({
     .label("Confirmation du nouveau mot de passe"),
 });
 
-function EditPassword() {
-  const { t } = useTranslation();
-  const [userId, setUserId] = useState("");
-
+function EditPasswordRh() {
+  const [rhId, setUserId] = useState("");
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchUserId = async () => {
       try {
-        const storedUserId = await AsyncStorage.getItem("userId");
+        const storedUserId = await AsyncStorage.getItem("rhId");
         if (storedUserId) {
           setUserId(storedUserId);
         }
@@ -45,39 +47,42 @@ function EditPassword() {
   const handlePasswordChange = async (values) => {
     const { currentPassword, newPassword } = values;
 
-    if (!userId) {
-      Alert.alert(t("error"), t("userIdUnavailable"));
+    if (!rhId) {
+      Alert.alert("Erreur", "ID utilisateur non disponible.");
       return;
     }
 
     try {
       const response = await axios.put(
-        "https://gcrbjwsr-3000.euw.devtunnels.ms/user/edit-password",
+        "http://192.168.1.15:3000/rh/edit-Password",
         {
-          userId,
+          rhId,
           currentPassword,
           newPassword,
         }
       );
 
       console.log(response.data);
-      Alert.alert(t("success"), t("passwordChangedSuccessfully"));
-      navigation.navigate("FonctionaliterUser");
+      Alert.alert("Succès", "Le mot de passe a été modifié avec succès.");
+      navigation.goBack();
     } catch (error) {
       console.error(error.response ? error.response.data : error);
-      Alert.alert(t("error"), t("passwordChangeError"));
+      Alert.alert(
+        "Erreur",
+        "Une erreur s'est produite lors de la modification du mot de passe."
+      );
     }
   };
 
   return (
     <ImageBackground
-      blurRadius={50}
+      blurRadius={10}
       style={styles.background}
       source={require("../assets/a2.png")}
     >
       <ScrollView contentContainerStyle={styles.scrollView}>
         <Screen style={styles.container}>
-          <AppForm
+          <Formik
             initialValues={{
               currentPassword: "",
               newPassword: "",
@@ -86,29 +91,43 @@ function EditPassword() {
             onSubmit={handlePasswordChange}
             validationSchema={validationSchema}
           >
-            <AppFormField
-              autoCorrect={false}
-              icon="lock"
-              name="currentPassword"
-              placeholder={t("currentPassword")}
-              secureTextEntry
-            />
-            <AppFormField
-              autoCorrect={false}
-              icon="lock"
-              name="newPassword"
-              placeholder={t("newPassword")}
-              secureTextEntry
-            />
-            <AppFormField
-              autoCorrect={false}
-              icon="lock"
-              name="confirmPassword"
-              placeholder={t("confirmPassword")}
-              secureTextEntry
-            />
-            <SubmitButton title={t("save")} />
-          </AppForm>
+            {({ handleChange, handleSubmit, errors }) => (
+              <>
+                <AppPass
+                  autoCorrect={false}
+                  icon="lock"
+                  name="currentPassword"
+                  placeholder={t("currentPassword")}
+                  style={{ flex: 1 }}
+                />
+                <AppText style={{ color: "red" }}>
+                  {errors.currentPassword}
+                </AppText>
+
+                <AppPass
+                  autoCorrect={false}
+                  icon="lock"
+                  name="newPassword"
+                  placeholder={t("newPassword")}
+                  style={{ flex: 1 }}
+                />
+                <AppText style={{ color: "red" }}>{errors.newPassword}</AppText>
+
+                <AppPass
+                  autoCorrect={false}
+                  icon="lock"
+                  name="confirmPassword"
+                  placeholder={t("confirmPassword")}
+                  style={{ flex: 1 }}
+                />
+                <AppText style={{ color: "red" }}>
+                  {errors.confirmPassword}
+                </AppText>
+
+                <SubmitButton title={t("save")} />
+              </>
+            )}
+          </Formik>
         </Screen>
       </ScrollView>
     </ImageBackground>
@@ -119,6 +138,7 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
     justifyContent: "flex-start",
+    alignContent: "stretch",
   },
   container: {
     padding: 10,
@@ -126,4 +146,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EditPassword;
+export default EditPasswordRh;

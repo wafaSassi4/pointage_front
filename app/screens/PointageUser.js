@@ -13,18 +13,22 @@ import colors from "../config/colors";
 import AppButton from "../components/AppButton";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useTranslation } from "react-i18next";
 
 const verifyExistingEntry = async (fullname) => {
   try {
     const response = await axios.post(
-      "http://192.168.1.35:3000/employees/getActiveEmployee",
+      "https://gcrbjwsr-3000.euw.devtunnels.ms/employees/getActiveEmployee",
       {
         fullname,
       }
     );
     if (response.data.message === "Employee exist") {
       await AsyncStorage.removeItem("workedTime");
-      await AsyncStorage.setItem("workedTime", response.data.entry[0].hoursWorked)
+      await AsyncStorage.setItem(
+        "workedTime",
+        response.data.entry[0].hoursWorked
+      );
       return true;
     }
   } catch (error) {
@@ -34,23 +38,24 @@ const verifyExistingEntry = async (fullname) => {
 };
 
 function PointageUser(props) {
+  const { t } = useTranslation();
   const navigation = useNavigation();
   const [workMode, setWorkMode] = useState("");
 
   const handleWorkMode = (mode) => {
     setWorkMode(mode);
     Alert.alert(
-      "Mode de travail sélectionné",
-      `Vous avez choisi de travailler ${
-        mode === "remote" ? "à distance" : "en présentiel"
-      }.`
+      t("Work Mode Selected"),
+      t("You have chosen to work {{mode}}.", {
+        mode: mode === "remote" ? t("remotely") : t("on-site"),
+      })
     );
   };
 
   const handleCommencer = async () => {
     try {
       if (!workMode) {
-        Alert.alert("Sélectionnez un type de travail");
+        Alert.alert(t("Select a work type"));
         return;
       }
 
@@ -66,7 +71,7 @@ function PointageUser(props) {
 
       if (!(await verifyExistingEntry(fullname))) {
         const response = await axios.post(
-          "http://192.168.1.35:3000/employees/createEntry",
+          "https://gcrbjwsr-3000.euw.devtunnels.ms/employees/createEntry",
           entryData,
           {
             headers: {
@@ -83,7 +88,7 @@ function PointageUser(props) {
       navigation.navigate("Chrono");
     } catch (error) {
       console.error("Erreur lors de la sauvegarde des données :", error);
-      Alert.alert("Erreur lors de la sauvegarde des données");
+      Alert.alert(t("Error"), t("An error occurred while saving data."));
     }
   };
 
@@ -91,10 +96,10 @@ function PointageUser(props) {
     <ImageBackground
       blurRadius={50}
       style={styles.background}
-      source={require("../assets/welcomebackground.jpg")}
+      source={require("../assets/a2.png")}
     >
       <View style={styles.container}>
-        <Text style={styles.text}>choisissez le mode de travaille :</Text>
+        <Text style={styles.text}>{t("Check your work mode:")}</Text>
         <View style={styles.row}>
           <TouchableOpacity
             style={[
@@ -107,7 +112,7 @@ function PointageUser(props) {
               <FontAwesome name="check" size={20} color="#fff" />
             )}
           </TouchableOpacity>
-          <Text style={styles.checkboxLabel}>Travail présentiel</Text>
+          <Text style={styles.checkboxLabel}>{t("On-site Work")}</Text>
         </View>
         <View style={styles.row}>
           <TouchableOpacity
@@ -121,12 +126,12 @@ function PointageUser(props) {
               <FontAwesome name="check" size={20} color="#fff" />
             )}
           </TouchableOpacity>
-          <Text style={styles.checkboxLabel}>Travail en ligne</Text>
+          <Text style={styles.checkboxLabel}>{t("Remote Work")}</Text>
         </View>
       </View>
       <AppButton
         style={styles.button}
-        title="J'ai commencé"
+        title={t("I've started")}
         color="beige"
         onPress={handleCommencer}
       ></AppButton>

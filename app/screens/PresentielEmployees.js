@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, ImageBackground } from "react-native";
 import axios from "axios";
 import colors from "../config/colors";
+import { useTranslation } from "react-i18next";
 
 function PresentielEmployees() {
+  const { t } = useTranslation();
   const [presentEmployees, setPresentEmployees] = useState([]);
   const [error, setError] = useState(null);
 
@@ -11,7 +13,7 @@ function PresentielEmployees() {
     const fetchPresentEmployees = async () => {
       try {
         const response = await axios.get(
-          "http://192.168.1.35:3000/employees/presentiel"
+          "https://gcrbjwsr-3000.euw.devtunnels.ms/employees/presentiel"
         );
         if (response.data && response.data.length > 0) {
           setPresentEmployees(response.data);
@@ -39,16 +41,12 @@ function PresentielEmployees() {
     <ImageBackground
       blurRadius={50}
       style={styles.background}
-      source={require("../assets/welcomebackground.jpg")}
+      source={require("../assets/a2.png")}
     >
       <View style={styles.container}>
-        <Text style={styles.title}>
-          Liste des employés travaillant en présentiel aujourd'hui :
-        </Text>
+        <Text style={styles.title}>{t("presentEmployeesListTitle")}</Text>
         {presentEmployees.length === 0 ? (
-          <Text style={styles.noEmployeeText}>
-            Aucun employé présent aujourd'hui.
-          </Text>
+          <Text style={styles.noEmployeeText}>{t("noEmployeePresent")}</Text>
         ) : (
           presentEmployees.map((employee, index) => (
             <View style={styles.employeeItem} key={index}>

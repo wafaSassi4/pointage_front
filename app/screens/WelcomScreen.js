@@ -3,8 +3,10 @@ import { ImageBackground, StyleSheet, View, Text, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import colors from "../config/colors";
 import AppButton from "../components/AppButton";
+import { useTranslation } from "react-i18next";
 
 function WelcomeScreen(props) {
+  const { t } = useTranslation();
   const navigation = useNavigation(); 
 
   const handleUserPress = () => {
@@ -15,18 +17,18 @@ function WelcomeScreen(props) {
     <ImageBackground
       blurRadius={50}
       style={styles.background}
-      source={require("../assets/welcomebackground.jpg")}
+      source={require("../assets/a2.png")}
     >
       <View style={styles.logoContainer}>
         <Image
           style={styles.logo}
           source={require("../assets/logoF.png")}
         ></Image>
-        <Text style={styles.tagtitle}> Bienvenue à notre application </Text>
+        <Text style={styles.tagtitle}>{t("Bienvenue à notre application")}  </Text>
         <View style={styles.buttonscontainer}>
-          <AppButton title="Ressource Humaine" color="caramel"></AppButton>
+          <AppButton title={t("Ressource Humaine")} color="caramel"></AppButton>
           <AppButton
-            title="utilisateur "
+            title={t("utilisateur ")}
             color="caramel"
             onPress={handleUserPress}
           ></AppButton>

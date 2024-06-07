@@ -3,18 +3,23 @@ import AppPicker from "../components/AppPicker";
 import Screen from "../components/Screen";
 import { StyleSheet, ImageBackground, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
-const categories = [
-  { label: "Travail Presentiel", value: 1 },
-  { label: "Travail En Remote", value: 2 },
-  { label: "Employés En Congé", value: 3 },
-];
+
+
 function Consulterdisposition(props) {
   const navigation = useNavigation();
+  const { t } = useTranslation();
+
+  const categories = [
+    { label: t("Employés Presentiel"), value: 1 },
+    { label: t("Travail En Remote"), value: 2 },
+    { label: t("Employés En Congé"), value: 3 },
+  ];
 
   const handleSelect = (item) => {
     if (item.value === 3) {
-      navigation.navigate("DispoConge");
+      navigation.navigate("CongeEmployee");
     } else if (item.value === 2) {
       navigation.navigate("RemoteEmployees");
     } else if (item.value === 1) {
@@ -26,13 +31,13 @@ function Consulterdisposition(props) {
     <ImageBackground
       blurRadius={50}
       style={styles.background}
-      source={require("../assets/welcomebackground.jpg")}
+      source={require("../assets/a3.png")}
     >
       <Screen>
         <AppPicker
           items={categories}
           icon="apps"
-          placeholder="Le mode de travail"
+          placeholder={t("Work_Mode")}
           onItemSelect={handleSelect}
         />
       </Screen>

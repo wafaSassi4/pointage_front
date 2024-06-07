@@ -10,8 +10,10 @@ import {
 } from "react-native";
 import colors from "../config/colors";
 import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 function FonctionaliterUser(props) {
+  const { t } = useTranslation();
   const navigation = useNavigation();
 
   const handlePointagePress = () => {
@@ -34,7 +36,7 @@ function FonctionaliterUser(props) {
       <ImageBackground
         blurRadius={50}
         style={styles.background}
-        source={require("../assets/welcomebackground.jpg")}
+        source={require("../assets/a3.png")}
       >
         <View style={styles.container}>
           <TouchableOpacity
@@ -47,7 +49,7 @@ function FonctionaliterUser(props) {
                 style={styles.image}
               />
             </View>
-            <Text style={styles.text}>pointager</Text>
+            <Text style={styles.text}>{t("pointage")}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.circleContainer}
@@ -59,7 +61,7 @@ function FonctionaliterUser(props) {
                 style={styles.image}
               />
             </View>
-            <Text style={styles.text}>Gérer le congé</Text>
+            <Text style={styles.text}>{t("gererConge")}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.circleContainer}
@@ -71,7 +73,7 @@ function FonctionaliterUser(props) {
                 style={styles.image}
               />
             </View>
-            <Text style={styles.text}>Demande de travail en ligne</Text>
+            <Text style={styles.text}>{t("demandeTravailEnLigne")}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.circleContainer}
@@ -83,7 +85,7 @@ function FonctionaliterUser(props) {
                 style={styles.image}
               />
             </View>
-            <Text style={styles.text}>Consulter disposition</Text>
+            <Text style={styles.text}>{t("consulterDisposition")}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.circleContainer}
@@ -95,7 +97,7 @@ function FonctionaliterUser(props) {
                 style={styles.image}
               />
             </View>
-            <Text style={styles.text}>Gérer compte</Text>
+            <Text style={styles.text}>{t("gererCompte")}</Text>
           </TouchableOpacity>
         </View>
       </ImageBackground>

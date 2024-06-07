@@ -1,36 +1,50 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import { StyleSheet, View, FlatList, TouchableOpacity } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Alert,
+  ImageBackground,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import { useTranslation } from "react-i18next";
+
 import ListItem from "../components/ListItem";
 import ListItemSeparator from "../components/ListItemSeparator";
 import colors from "../config/colors";
 import Icon from "../components/Icon";
 import Screen from "../components/Screen";
-import axios from "axios";
-import { useTranslation } from "react-i18next";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const { t } = useTranslation();
 const menuItems = [
   {
-    title: t("Edit_Name"),
+    title: "Edit Name",
     icon: {
       name: "account-edit",
       backgroundColor: colors.primary,
     },
-    screen: "EditNameScreen",
+    screen: "EditNameRH",
   },
   {
-    title: t("Edit_Password"),
+    title: "Edit Password",
     icon: {
       name: "account-key",
       backgroundColor: colors.secondary,
     },
-    screen: "EditPassword",
+    screen: "EditPasswordRH",
   },
   {
-    title: t("Modifier_Language"),
+    title: "Delete RH",
+    icon: {
+      name: "account-remove",
+      backgroundColor: colors.medium,
+    },
+    screen: "SupprimerRH",
+  },
+  {
+    title: "Change Language",
     icon: {
       name: "account-tie-outline",
       backgroundColor: colors.caramel,
@@ -39,9 +53,11 @@ const menuItems = [
   },
 ];
 
-function Settings(props) {
+function AccountScreen(props) {
+  const { t } = useTranslation();
   const [fullname, setFullname] = useState("");
   const [email, setEmail] = useState("");
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchFullname = async () => {
@@ -70,7 +86,6 @@ function Settings(props) {
 
     fetchEmail();
   }, []);
-  const navigation = useNavigation();
 
   const handleMenuItemPress = (screen) => {
     if (screen) {
@@ -80,8 +95,8 @@ function Settings(props) {
 
   const handleLogout = async () => {
     Alert.alert(
-      t("Confirm_Logout"),
-      t("Logout_Message"),
+      t("logoutConfirmationTitle"),
+      t("logoutConfirmationMessage"),
       [
         {
           text: t("logoutConfirmationCancel"),
@@ -89,7 +104,7 @@ function Settings(props) {
           style: "cancel",
         },
         {
-          text: t("Yes"),
+          text: t("logoutConfirmationConfirm"),
           onPress: async () => {
             try {
               const res = await axios.post(
@@ -100,7 +115,6 @@ function Settings(props) {
                 await AsyncStorage.removeItem("userToken");
                 await AsyncStorage.removeItem("fullname");
 
-                // Réinitialisez l'état de la navigation pour nettoyer l'historique de la pile
                 navigation.reset({
                   index: 0,
                   routes: [{ name: "Login" }],
@@ -108,7 +122,7 @@ function Settings(props) {
               }
             } catch (error) {
               console.error("Erreur lors de la déconnexion", error);
-              alert(t("Logout_Failed"));
+              alert(t("logoutFailedMessage"));
             }
           },
         },
@@ -119,15 +133,15 @@ function Settings(props) {
 
   return (
     <ImageBackground
-      blurRadius={50}
+      blurRadius={10}
       style={styles.background}
-      source={require("../assets/a3.png")}
+      source={require("../assets/a2.jpg")}
     >
       <Screen style={styles.screen}>
         <View style={styles.container}>
           <ListItem
             title={fullname}
-            subtitle={email}
+            subTitle={email}
             image={require("../assets/pdp.jpg")}
           />
         </View>
@@ -140,7 +154,7 @@ function Settings(props) {
               <TouchableOpacity>
                 <ListItem
                   onPress={() => handleMenuItemPress(item.screen)}
-                  title={item.title}
+                  title={t(item.title)}
                   IconComponent={
                     <Icon
                       name={item.icon.name}
@@ -153,7 +167,7 @@ function Settings(props) {
           />
         </View>
         <ListItem
-          title={t("Logout")}
+          title={t("logoutTitle")}
           IconComponent={<Icon name="logout" backgroundColor="#ffe66d" />}
           onPress={handleLogout}
         />
@@ -163,17 +177,15 @@ function Settings(props) {
 }
 
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-    justifyContent: "flex-start",
-    alignItems: "center",
-  },
-  screen: {
-    backgroundColor: colors.claire,
-  },
+  screen: {},
   container: {
     marginVertical: 20,
   },
+  background: {
+    flex: 1,
+    justifyContent: "flex-start",
+    alignContent: "stretch",
+  },
 });
 
-export default Settings;
+export default AccountScreen;

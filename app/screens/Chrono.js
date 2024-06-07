@@ -8,9 +8,10 @@ import {
   Modal,
   Animated,
 } from "react-native";
-import axios from "axios"; 
+import axios from "axios";
 import colors from "../config/colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useTranslation } from "react-i18next";
 
 function Chrono(props) {
   const [timer, setTimer] = useState(0);
@@ -36,22 +37,20 @@ function Chrono(props) {
   const scaleValue = new Animated.Value(0);
 
   useEffect(() => {
-
     const displaySequentialNotifications = async () => {
       const workMode = await AsyncStorage.getItem("workMode");
       if (workMode === "remote") {
         const numberOfNotifications = 5;
         for (let i = 0; i < numberOfNotifications; i++) {
-          
           const randomTime = Math.floor(Math.random() * 6000) + 3000;
-          await new Promise(resolve => setTimeout(resolve, randomTime));
+          await new Promise((resolve) => setTimeout(resolve, randomTime));
           setShowContent(true);
         }
       }
-    }
+    };
     displaySequentialNotifications();
   }, []);
-
+  const { t, i18n } = useTranslation();
   const handleClose = () => {
     Animated.timing(scaleValue, {
       toValue: 0,
@@ -113,7 +112,7 @@ function Chrono(props) {
     const entryId = await AsyncStorage.getItem("entryId");
     try {
       const response = await axios.patch(
-        `http://192.168.1.35:3000/employees/updateExitTimeAndHoursWorked/${entryId}`,
+        `https://gcrbjwsr-3000.euw.devtunnels.ms/employees/updateExitTimeAndHoursWorked/${entryId}`,
         {
           exitTime: `${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`,
           hoursWorked: formatTime(timer),
@@ -155,54 +154,41 @@ function Chrono(props) {
     // Envoyer les données au serveur
     sendDataToServer();
   };
-  
 
-  // Rendu du composant
   return (
     <ImageBackground
       blurRadius={50}
       style={styles.background}
-      source={require("../assets/welcomebackground.jpg")}
+      source={require("../assets/a3.png")}
     >
-      {/* Titre */}
-      <Text style={styles.tagtitle}> Bon Travail ... </Text>
-
-      {/* Conteneur principal */}
+      <Text style={styles.tagtitle}>{t("Good_Work")} </Text>
       <View style={styles.container}>
-        {/* Affichage du temps écoulé */}
         <View style={styles.timerContainer}>
           <Text style={styles.timer}>{formatTime(timer)}</Text>
         </View>
 
-        {/* Boutons d'action */}
         <View style={styles.buttonContainer}>
-          {/* Bouton Pause ou Continue en fonction de l'état */}
           <TouchableOpacity
             style={styles.button}
             onPress={isPause ? handleContinue : handlePause}
           >
             <Text style={styles.buttonText}>
-              {isPause ? "Continue" : "Pause"}
+              {isPause ? t("Continue") : t("Pause")}
             </Text>
           </TouchableOpacity>
-
-          {/* Bouton Redémarrer */}
           <TouchableOpacity style={styles.button} onPress={handleRestart}>
-            <Text style={styles.buttonText}>Restart</Text>
+            <Text style={styles.buttonText}>{t("Restart")}</Text>
           </TouchableOpacity>
-
-          {/* Bouton Terminer */}
           <TouchableOpacity style={styles.button} onPress={handleFinish}>
-            <Text style={styles.buttonText}>Terminer</Text>
+            <Text style={styles.buttonText}>{t("Finish")}</Text>
           </TouchableOpacity>
         </View>
 
         {elapsedTime > 0 && (
           <Text style={styles.elapsedTime}>
-            Temps écoulé : {formatTime(elapsedTime)}
+            {t("Elapsed_Time")} : {formatTime(elapsedTime)}
           </Text>
         )}
-
       </View>
       <Modal
         animationType="fade"
@@ -217,9 +203,9 @@ function Chrono(props) {
               { transform: [{ scale: contentScale }] },
             ]}
           >
-            <Text>This content appeared after a random time!</Text>
+            <Text>{t("This content appeared after a random time!")}</Text>
             <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-              <Text style={styles.closeButtonText}>Close</Text>
+              <Text style={styles.closeButtonText}>{t("Close")}</Text>
             </TouchableOpacity>
           </Animated.View>
         </View>
@@ -228,7 +214,6 @@ function Chrono(props) {
   );
 }
 
-// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -316,5 +301,4 @@ const styles = StyleSheet.create({
   },
 });
 
-// Export du composant Chrono
 export default Chrono;

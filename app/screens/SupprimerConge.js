@@ -10,9 +10,10 @@ import colors from "../config/colors";
 import * as Yup from "yup";
 import Screen from "../components/Screen";
 import AppForm from "../components/Forms/AppForm";
-import SubmitButton from "../components/Forms/SubmitButton";
 import AppFormField from "../components/Forms/AppFormField";
+import SubmitButton from "../components/Forms/SubmitButton";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 
 const validationSchema = Yup.object().shape({
   nomPrenom: Yup.string().required().label("Nom et Prénom"),
@@ -22,23 +23,24 @@ const validationSchema = Yup.object().shape({
 });
 
 function SupprimerConge({ navigation }) {
+  const { t } = useTranslation();
   const handleSubmit = async (values) => {
     try {
       // Correction ici : Assurez-vous que la structure de données envoyée correspond à celle attendue par votre API.
       const response = await axios.delete(
-        "http://192.168.1.35:3000/conge/supprimer-conge",
+        "https://gcrbjwsr-3000.euw.devtunnels.ms/conge/supprimer-conge",
         {
           data: values,
         }
       );
 
       console.log(response.data);
-      Alert.alert("Succès", "Congé supprimé avec succès!");
+      Alert.alert(t("successTitle"), t("deleteSuccess"));
       navigation.goBack();
     } catch (error) {
       console.error("Erreur lors de la suppression du congé:", error);
       // Amélioration ici : Affichage d'un message d'erreur plus informatif pour l'utilisateur.
-      let errorMessage = "Erreur lors de la suppression du congé.";
+      let errorMessage = t("deleteError");
       if (
         error.response &&
         error.response.data &&
@@ -46,7 +48,7 @@ function SupprimerConge({ navigation }) {
       ) {
         errorMessage = error.response.data.message;
       }
-      Alert.alert("Erreur", errorMessage);
+      Alert.alert(t("errorTitle"), errorMessage);
     }
   };
 
@@ -54,11 +56,11 @@ function SupprimerConge({ navigation }) {
     <ImageBackground
       blurRadius={10}
       style={styles.background}
-      source={require("../assets/welcomebackground.jpg")}
+      source={require("../assets/a2.png")}
     >
       <ScrollView contentContainerStyle={styles.scrollView}>
         <Screen style={styles.container}>
-          <Text style={styles.title}>Supprimer Congé</Text>
+          <Text style={styles.title}>{t("Supprimer Congé")}</Text>
           <AppForm
             initialValues={{
               nomPrenom: "",
@@ -71,26 +73,26 @@ function SupprimerConge({ navigation }) {
           >
             <AppFormField
               name="nomPrenom"
-              placeholder="Nom et Prénom"
+              placeholder={t("Name and Surname")}
               icon="account"
             />
             <AppFormField
               name="email"
-              placeholder="Email"
+              placeholder={t("Email")}
               icon="email"
               keyboardType="email-address"
             />
             <AppFormField
               name="dateDebut"
-              placeholder="Date de début (JJ/MM/AAAA)"
+              placeholder={t("startDatePlaceholder1")}
               icon="calendar-range"
             />
             <AppFormField
               name="dateFin"
-              placeholder="Date de fin (JJ/MM/AAAA)"
+              placeholder={t("endDatePlaceholder1")}
               icon="calendar-range"
             />
-            <SubmitButton title="Supprimer" />
+            <SubmitButton title={t("Supprimer")} />
           </AppForm>
         </Screen>
       </ScrollView>

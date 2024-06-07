@@ -3,20 +3,22 @@ import { View, Text, StyleSheet, ImageBackground } from "react-native";
 import * as Yup from "yup";
 import axios from "axios";
 import colors from "../config/colors";
-import SubmitButton from "../components/Forms/SubmitButton";
 import AppForm from "../components/Forms/AppForm";
 import AppFormField from "../components/Forms/AppFormField";
+import SubmitButton from "../components/Forms/SubmitButton";
 import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().required().email().label("Email"),
 });
 
 function ForgetPassword(props) {
+  const { t } = useTranslation();
   const navigation = useNavigation();
   const handleSubmit = (values) => {
     axios
-      .post("http://192.168.1.35:3000/user/forget-password", {
+      .post("https://gcrbjwsr-3000.euw.devtunnels.ms/user/forget-password", {
         email: values.email,
       })
       .then((response) => {
@@ -25,7 +27,7 @@ function ForgetPassword(props) {
       })
       .catch((error) => {
         console.error("Échec de la demande", error);
-        alert("Echec de la connexion !");
+        Alert.alert(t("error"), t("passwordChangeError"));
       });
   };
 
@@ -33,11 +35,11 @@ function ForgetPassword(props) {
     <ImageBackground
       blurRadius={50}
       style={styles.background}
-      source={require("../assets/welcomebackground.jpg")}
+      source={require("../assets/a2.png")}
     >
       <View style={styles.container}>
-        <Text style={styles.Entete}>Trouvez votre compte</Text>
-        <Text style={styles.text}>Entrer votre adresse mail</Text>
+        <Text style={styles.Entete}>{t("Trouvez votre compte")}</Text>
+        <Text style={styles.text}>{t("Entrer votre adresse mail")}</Text>
         <AppForm
           initialValues={{ email: "" }}
           onSubmit={handleSubmit}
@@ -49,14 +51,15 @@ function ForgetPassword(props) {
             icon="email"
             keyboardType="email-address"
             name="email"
-            placeholder="Email"
+            placeholder={t("Email")}
             textContentType="emailAddress"
           />
           <Text style={styles.text}>
-            Vous recevrez peut-etre des notifications de notre part sur votre
-            boite mail et par texto à des fins de sécurité et de connexion
+            {t(
+              "Vous recevrez peut-etre des notifications de notre part sur votre boite mail et par texto à des fins de sécurité et de connexion"
+            )}
           </Text>
-          <SubmitButton title="Continuer" />
+          <SubmitButton title={t("Continuer")} />
         </AppForm>
       </View>
     </ImageBackground>

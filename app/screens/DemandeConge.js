@@ -13,6 +13,7 @@ import AppFormField from "../components/Forms/AppFormField";
 import axios from "axios";
 import SubmitButton from "../components/Forms/SubmitButton";
 import AppForm from "../components/Forms/AppForm";
+import { useTranslation } from "react-i18next";
 
 const validationSchema = Yup.object().shape({
   nomPrenom: Yup.string().required().label("Nom et Prénom"),
@@ -21,22 +22,27 @@ const validationSchema = Yup.object().shape({
   dateFin: Yup.string().required().label("Date de fin"),
 });
 
-
 function DemandeConge({ navigation }) {
+  const { t } = useTranslation();
+  const [loading, setLoading] = useState(false);
+
   const handleSubmit = async (values) => {
-    const { nomPrenom, email, dateDebut, dateFin } = values;
+    setLoading(true);
 
     try {
+      const email = await AsyncStorage.getItem("email");
       const response = await axios.post(
-        "http://192.168.1.35:3000/conge/demande-conge",
-        { nomPrenom, email, dateDebut, dateFin }
+        "https://gcrbjwsr-3000.euw.devtunnels.ms/conge/demande-conge",
+        { email, ...values }
       );
       console.log(response.data);
       navigation.goBack();
-      Alert.alert("Demande de congé envoyée avec succès!");
+      Alert.alert(t("successTitle1"), t("successMessage1"));
     } catch (error) {
       console.error("Erreur lors de l'envoi de la demande de congé:", error);
-      Alert.alert(error.response.data.message);
+      Alert.alert(t("errorTitle1"), error.response.data.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -44,15 +50,13 @@ function DemandeConge({ navigation }) {
     <ImageBackground
       blurRadius={50}
       style={styles.background}
-      source={require("../assets/welcomebackground.jpg")}
+      source={require("../assets/a2.png")}
     >
       <ScrollView contentContainerStyle={styles.scrollView}>
         <Screen style={styles.container}>
-          <Text style={styles.title}>Demande Congé</Text>
+          <Text style={styles.title}>{t("Demande Congé")}</Text>
           <AppForm
             initialValues={{
-              nomPrenom: "",
-              email: "",
               dateDebut: "",
               dateFin: "",
             }}
@@ -62,35 +66,77 @@ function DemandeConge({ navigation }) {
             <AppFormField
               autoCapitalize="none"
               autoCorrect={false}
-              icon="lock"
-              name="nomPrenom"
-              placeholder="Nom et Prénom"
-            />
-            <AppFormField
-              autoCapitalize="none"
-              autoCorrect={false}
-              icon="email"
-              keyboardType="email-address"
-              name="email"
-              placeholder="Email"
-              textContentType="emailAddress"
-            />
-            <AppFormField
-              autoCapitalize="none"
-              autoCorrect={false}
               icon="calendar"
               name="dateDebut"
-              placeholder="JJ/MM/AAAA"
+              placeholder={t("startDatePlaceholder1")}
             />
             <AppFormField
               autoCapitalize="none"
               autoCorrect={false}
               icon="calendar"
               name="dateFin"
-              placeholder="JJ/MM/AAAA"
+              placeholder={t("endDatePlaceholder1")}
             />
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={values.typeConge}
+                onValueChange={(itemValue) =>
+                  setFieldValue("typeConge", itemValue)
+                }
+                onBlur={() => setFieldTouched("typeConge")}
+              >
+                <Picker.Item
+                  label={t("annualPaidLeave")}
+                  value="Congés payés annuels"
+                />
+                <Picker.Item label={t("sickLeave")} value="Congé maladie" />
+                <Picker.Item
+                  label={t("maternityPaternityLeave")}
+                  value="Congé de maternité/paternité"
+                />
+                <Picker.Item
+                  label={t("parentalLeave")}
+                  value="Congé parental"
+                />
+                <Picker.Item
+                  label={t("sabbaticalLeave")}
+                  value="Congé sabbatique"
+                />
+                <Picker.Item
+                  label={t("unpaidLeave")}
+                  value="Congé sans solde"
+                />
+                <Picker.Item
+                  label={t("familyEventLeave")}
+                  value="Congé pour événements familiaux"
+                />
+                <Picker.Item
+                  label={t("trainingLeave")}
+                  value="Congé de formation"
+                />
+                <Picker.Item
+                  label={t("researchInnovationLeave")}
+                  value="Congé pour recherche ou innovation"
+                />
+                <Picker.Item
+                  label={t("familySolidarityLeave")}
+                  value="Congé de solidarité familiale"
+                />
+                <Picker.Item
+                  label={t("movingLeave")}
+                  value="Congé de déménagement"
+                />
+                <Picker.Item
+                  label={t("volunteerHumanitarianLeave")}
+                  value="Congé pour activité bénévole ou humanitaire"
+                />
+              </Picker>
+            </View>
+            {touched.typeConge && errors.typeConge && (
+              <Text style={styles.error}>{errors.typeConge}</Text>
+            )}
 
-            <SubmitButton title="Envoyer" />
+            <SubmitButton title={t("Envoyer")} loading={loading} />
           </AppForm>
         </Screen>
       </ScrollView>
@@ -130,6 +176,18 @@ const styles = StyleSheet.create({
     backgroundColor: colors.beige,
     marginBottom: 30,
     justifyContent: "center",
+  },
+  pickerContainer: {
+    backgroundColor: colors.claire,
+    borderRadius: 25,
+    width: "100%",
+    padding: 10,
+    marginVertical: 10,
+  },
+  error: {
+    color: "red",
+    fontSize: 14,
+    marginLeft: 10,
   },
 });
 

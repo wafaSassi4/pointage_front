@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, ImageBackground, Alert } from "react-native";
+import { StyleSheet, ImageBackground, Alert, Text } from "react-native";
 import AppForm from "../components/Forms/AppForm";
+import Screen from "../components/Screen";
 import AppFormField from "../components/Forms/AppFormField";
 import SubmitButton from "../components/Forms/SubmitButton";
-import Screen from "../components/Screen";
 import * as Yup from "yup";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -14,7 +14,7 @@ const validationSchema = Yup.object().shape({
   name: Yup.string().required().label("Nom"),
 });
 
-const EditNameScreen = ({ currentName, onSave }) => {
+const EditNameRH = ({ currentName, onSave }) => {
   const { t } = useTranslation();
   const [userId, setUserId] = useState("");
   const navigation = useNavigation();
@@ -38,13 +38,13 @@ const EditNameScreen = ({ currentName, onSave }) => {
     const { name } = values;
 
     if (!userId) {
-      Alert.alert("Erreur", "ID utilisateur non disponible.");
+      Alert.alert(t("error"), t("userIdUnavailable"));
       return;
     }
 
     try {
       const response = await axios.put(
-        "https://gcrbjwsr-3000.euw.devtunnels.ms/user/edit-name",
+        "https://gcrbjwsr-3000.euw.devtunnels.ms/rh/edit-name",
         {
           userId,
           name,
@@ -62,7 +62,7 @@ const EditNameScreen = ({ currentName, onSave }) => {
 
   return (
     <ImageBackground
-      blurRadius={50}
+      blurRadius={10}
       style={styles.background}
       source={require("../assets/a2.png")}
     >
@@ -90,6 +90,7 @@ const EditNameScreen = ({ currentName, onSave }) => {
 const styles = StyleSheet.create({
   background: {
     flex: 1,
+    alignContent: "stretch",
     justifyContent: "flex-start",
   },
   container: {
@@ -98,4 +99,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EditNameScreen;
+export default EditNameRH;

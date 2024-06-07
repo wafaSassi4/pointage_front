@@ -6,15 +6,11 @@ function Confirmation(props) {
     <ImageBackground
       blurRadius={50}
       style={styles.background}
-      source={require("../assets/welcomebackground.jpg")}
+      source={require("../assets/a2.png")}
     >
       <View style={styles.logoContainer}>
         <Text style={styles.text}>
-          Un e-mail de réinitialisation de mot de passe a été envoyé à l'adresse
-          que vous avez fournie. Veuillez vérifier votre boîte de réception et
-          suivre les instructions pour réinitialiser votre mot de passe. Si vous
-          ne recevez pas l'e-mail dans quelques minutes, veuillez vérifier votre
-          dossier de courrier indésirable (spam).
+        {t("Reset_Password_Email_Sent")}
         </Text>
       </View>
     </ImageBackground>

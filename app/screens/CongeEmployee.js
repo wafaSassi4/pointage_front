@@ -1,37 +1,36 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, ImageBackground } from "react-native";
-import colors from "../config/colors";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 
-function RemoteEmployees() {
+function CongeEmployee() {
   const { t } = useTranslation();
-  const [remoteEmployees, setRemoteEmployees] = useState([]);
+  const [congeEmployees, setCongeEmployees] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchRemoteEmployees = async () => {
+    const fetchCongeEmployees = async () => {
       try {
         const response = await axios.get(
-          "https://gcrbjwsr-3000.euw.devtunnels.ms/employees/remote"
+          "https://gcrbjwsr-3000.euw.devtunnels.ms/conge/employesConge"
         );
         if (response.data && response.data.length > 0) {
-          setRemoteEmployees(response.data);
+          setCongeEmployees(response.data);
         } else {
-          setRemoteEmployees([]);
+          setCongeEmployees([]);
         }
       } catch (error) {
         console.error("Erreur lors de la récupération des employés :", error);
         setError(error.message);
       }
     };
-    fetchRemoteEmployees();
+    fetchCongeEmployees();
   }, []);
 
   if (error) {
     return (
       <View style={styles.container}>
-        <Text style={styles.errorText}>Une erreur s'est produite :</Text>
+        <Text style={styles.errorText}>{t("Error_occurred")}:</Text>
         <Text style={styles.errorText}>{error}</Text>
       </View>
     );
@@ -39,19 +38,22 @@ function RemoteEmployees() {
 
   return (
     <ImageBackground
-      blurRadius={50}
+      blurRadius={10}
       style={styles.background}
       source={require("../assets/a2.png")}
     >
       <View style={styles.container}>
-        <Text style={styles.title}>{t("remoteEmployeesListTitle")}</Text>
-        {remoteEmployees.length === 0 ? (
-          <Text style={styles.noEmployeeText}>{t("noEmployeePresent")}</Text>
+        <Text style={styles.title}>
+          {t("Employee_working_on_leave_today")}:
+        </Text>
+        {congeEmployees.length === 0 ? (
+          <Text style={styles.noEmployeeText}>
+            {t("No_employee_on_leave_today")}.
+          </Text>
         ) : (
-          remoteEmployees.map((employee, index) => (
+          congeEmployees.map((conge, index) => (
             <View style={styles.employeeItem} key={index}>
-              <Text style={styles.fullname}>{employee.fullname}</Text>
-              <Text style={styles.fullname}>{employee.email}</Text>
+              <Text style={styles.fullname}>{conge.nomPrenom}</Text>
             </View>
           ))
         )}
@@ -61,21 +63,20 @@ function RemoteEmployees() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 10,
+  },
   background: {
     flex: 1,
     justifyContent: "flex-start",
-    alignItems: "center",
-    padding: 20,
-  },
-  container: {
-    flex: 1,
-    padding: 20,
+    alignContent: "stretch",
   },
   title: {
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 10,
-    color: colors.caramel,
+    marginTop: 20,
   },
   employeeItem: {
     padding: 10,
@@ -83,7 +84,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   fullname: {
-    fontSize: 18,
+    fontSize: 20,
     fontStyle: "normal",
   },
   errorText: {
@@ -96,4 +97,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RemoteEmployees;
+export default CongeEmployee;
